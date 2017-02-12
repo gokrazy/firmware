@@ -83,6 +83,12 @@ func main() {
 	flag.Parse()
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
+	if *userPass == "" {
+		if fromEnv := os.Getenv("GITHUB_USER") + ":" + os.Getenv("GITHUB_AUTH_TOKEN"); fromEnv != "" {
+			*userPass = fromEnv
+		}
+	}
+
 	path := filepath.Join(gopath, "src", "github.com", "gokrazy", "firmware")
 	var firmwareFiles []string
 	for _, pattern := range []string{"*.elf", "*.bin", "*.dat"} {
