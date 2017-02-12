@@ -18,10 +18,10 @@ script:
   - "gofmt -l $(find . -name '*.go' | tr '\\n' ' ') >/dev/null"
   # Check whether files were not gofmt'ed.
   - gosrc=$(find . -name '*.go' | tr '\\n' ' '); [ $(gofmt -l $gosrc 2>&- | wc -l) -eq 0 ] || (echo 'gofmt was not run on these files:'; gofmt -l $gosrc 2>&-; false)
+  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || (go get -u github.com/gokrazy/autoupdate/cmd/gokr-merge && gokr-merge -require_label=please-merge; ret=$?; if [ $ret -eq 0 ]; then exit 0; elif [ $ret -eq 1 ]; then exit 1; else true; fi)'
   # Update firmware files
   - go install ./cmd/gokr-update-firmware
   - gokr-update-firmware
   # TODO: run boot test on raspberry pi
   # update pull request
-  - go get -u github.com/gokrazy/autoupdate/cmd/gokr-amend
-  - gokr-amend *.bin *.elf *.dat
+  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || (go get -u github.com/gokrazy/autoupdate/cmd/gokr-amend && gokr-amend -set_label=please-merge *.bin *.elf *.dat)'
