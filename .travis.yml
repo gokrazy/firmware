@@ -4,7 +4,7 @@ sudo: false
 
 language: go
 go:
-  - 1.7
+  - 1.8
 
 env:
   global:
@@ -12,16 +12,19 @@ env:
   - secure: "C88RAjHfbNjL0OIG/21fQ0HfgfCQZs2Jiqrw06ZtSsl9TdHcFhA7BnrbQnA7t9RI1rUy58QIZkqJInOZ7XzunQKnStmrQUASng++Sd22hPs01W8Djf9+f5kohQD7GV8eDHX35k9dWX37u4DBggtrIwwRa3kqqirUMocDCiWyH7ZplU6lUtLC4YhYwm030morde0+BDap+C9jBMKCdY00SryJkEMeMtXo0CZUoHdv2m8onWdhMs9Zl/uW0U57E6ttSrZzc9K19juEk8r/X+jCSOJ5blczWFkeLRZxUXIQhxsV8Ckx+Mod1yr8o/6xBcSV5xMHhDd55gaKKrrJzkFnqgTJhwSCssCSMYBGqkR9gRHekUogJmEHKIjmI75Pz6Ry+PBEIo7tSL21bYlfs3cIByT4Tpz8Cb8ZcJPBGfr5Qn2AtDgGUPusyOUDcaDZHL0NA3YQ5Lf0DWjimwF7vOv8BcW/6kxDzz+lk685gc9DQtf5X6ttoqr5hFiQ0r0/foTQo6qLFgeFHfBS1gay0gRoxqIJEJZ5FkJdQMJLY6t8zdpEbtBkiUmgWAxqHcAntgWfRZnzsyAfRFcUZX6m6p9yXecbu452inwVOHN/ioU6Gjf8omBbMOLVkNJoV66RXjrtVqp4T5/A+dr0KSxXjJ+xrfxxQ/yJyKAsDWJTQin9obs="
   # GITHUB_AUTH_TOKEN
   - secure: "CBgwbxfYz/4fhNd1B4W4Xz0sdSbpYgLIXJNNn+YzGouwrjsHGaiA3Ac/y9DsqPGQ6OqDJZJHZlVpOCNuDfEZWDdwiXoSCl8sNiNBiMSkKJfp3P0IHjLb9eCdqLFRTcQdUjzmbRUQhzngCSfKOaEEpEORUmwbomNZLtnjgiF0Jl5urucxyeO3WUN0dbDSkrdYYQbpHYXeKL33Aeqg6CHDRdzZIJrCsNkdChszGI/FX1v32Q1uu9xDbytO0HUyMJtqwUR/r3cdX3nVoFiJoehiky4IBvcvoLeDZCG+gzgNFkCkLTHc2Sqe+iMxqplDpf4hpXanVjFNj33OrrlJ5fMFqxpGrvWWFTIW8FVt5olG3IIjOJCDpMs7O/I79Y/yTESpZqkZl8h9WfdpDLyHp2bnzQI7UsCsURb1I+T58aKyRdix2Oe30VkHBXQKP3GjTpum6B/lg4bFBPnNgoZQ9xYDIEic+IVo1wvF3LbpaEFhxP60UIk8zWx0BZssdO9CaspLKBS6sSM90ibQPaxW9QAAvoHxfVn8iDCmSRanhAoFVAbBJn6gMaRoiUhJsQpSc32XfsqqxPAy43BesrSfVwyf4iwI4odY/vx1GL4h09c9+E6Vr320c0kgUIzR1ipuwBxBnXFamrMVH7Jrl7NSmqxxgyFhlAiQOqVzjs6/ctjDZfE="
+  # BOOTERY_URL
+  - secure: "BAA7ToahMK+yMK/+tcZRyAP2emNlUQctHMhGgSnJhZjY4TPqtaK9gfx07OgJupmTAw/Omg8vNgwNkva9pXqBSHkbKhgrmFLUOd8ewcpO72wZEgsOH2IPUoPoN1swo4+uSfPlzmJ/Syu7uSXuRIZLtb3RC9002j1wXKEzJWiPbTAoI7LIx021OMtCjjk+QbSMW0E8oHz36Z4TfuSE3txI/hvJDf3TaJ70zpuHWpvMh9ZaqEcACJb25Zt7RVkCedPYmwIdckXhRE9hAYSti+ahMUvPDQAj2NiCzjLtff+FL7x0FWMCKo+nxVUOlGLoGK2cn88z1yyDnsFIxfpx8YwzZAFtcL0keDxIZNhqnKUsqHosAIeS6MCObU0kicZlWcnAl8hvqKowHPAANrcE0/VpciEHVf5Ozr3reVvGgbGleTE9qAeMaWBQMDFTsEfKYqDGUOcJKzuL6r7G3HTe32fH73BlJdcO/XToKZ5SyzZhdQTRORAPEV2tx/7zTnTBCwJ49EgVcpvsKEQRfB565bwzXtfOATZsVw2KToimBYsVNA9qohFrdSGfuhQH0hihlfDW0NX5QCgKj1BmeX9MhEK2/B/J6qHPa6cFUUmmRD61lP7RabcnCYSZ5lt+rDRB7huOxp0LuUurXkxshxTrW8Mm06bvzkuxA0x+X1qI+BB2Uq0="
 
 script:
   # Check whether files are syntactically correct.
   - "gofmt -l $(find . -name '*.go' | tr '\\n' ' ') >/dev/null"
   # Check whether files were not gofmt'ed.
   - gosrc=$(find . -name '*.go' | tr '\\n' ' '); [ $(gofmt -l $gosrc 2>&- | wc -l) -eq 0 ] || (echo 'gofmt was not run on these files:'; gofmt -l $gosrc 2>&-; false)
-  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || (go get -u github.com/gokrazy/autoupdate/cmd/gokr-merge && gokr-merge -require_label=please-merge; ret=$?; if [ $ret -eq 0 ]; then exit 0; elif [ $ret -eq 1 ]; then exit 1; else true; fi)'
+  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || go get -u github.com/gokrazy/autoupdate/cmd/... github.com/gokrazy/tools/cmd/gokr-packer'
+  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || gokr-boot -require_label=please-boot -set_label=please-merge -bootery_url=$BOOTERY_URL || travis_terminate $?'
+  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || { gokr-merge -require_label=please-merge; ret=$?; if [ $ret -eq 0 ]; then travis_terminate 0; elif [ $ret -eq 1 ]; then travis_terminate 1; else true; fi; }'
   # Update firmware files
   - go install ./cmd/gokr-update-firmware
   - gokr-update-firmware
-  # TODO: run boot test on raspberry pi
   # update pull request
-  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || (go get -u github.com/gokrazy/autoupdate/cmd/gokr-amend && gokr-amend -set_label=please-merge *.bin *.elf *.dat)'
+  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || (go get -u github.com/gokrazy/autoupdate/cmd/gokr-amend && gokr-amend -set_label=please-boot *.bin *.elf *.dat)'
