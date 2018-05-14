@@ -29,7 +29,7 @@ var (
 
 // Git commit hash of https://github.com/raspberrypi/firmware to take
 // firmware files from.
-const firmwareRef = "54d8888d5b8048af9f7765cfd632faff78ac8053"
+const firmwareRef = "0f5f899ccec1c2ef8bba02aa49700b4ec19b4199"
 
 var gopath = mustGetGopath()
 
