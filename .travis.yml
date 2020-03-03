@@ -12,4 +12,4 @@ env:
   - secure: "CBgwbxfYz/4fhNd1B4W4Xz0sdSbpYgLIXJNNn+YzGouwrjsHGaiA3Ac/y9DsqPGQ6OqDJZJHZlVpOCNuDfEZWDdwiXoSCl8sNiNBiMSkKJfp3P0IHjLb9eCdqLFRTcQdUjzmbRUQhzngCSfKOaEEpEORUmwbomNZLtnjgiF0Jl5urucxyeO3WUN0dbDSkrdYYQbpHYXeKL33Aeqg6CHDRdzZIJrCsNkdChszGI/FX1v32Q1uu9xDbytO0HUyMJtqwUR/r3cdX3nVoFiJoehiky4IBvcvoLeDZCG+gzgNFkCkLTHc2Sqe+iMxqplDpf4hpXanVjFNj33OrrlJ5fMFqxpGrvWWFTIW8FVt5olG3IIjOJCDpMs7O/I79Y/yTESpZqkZl8h9WfdpDLyHp2bnzQI7UsCsURb1I+T58aKyRdix2Oe30VkHBXQKP3GjTpum6B/lg4bFBPnNgoZQ9xYDIEic+IVo1wvF3LbpaEFhxP60UIk8zWx0BZssdO9CaspLKBS6sSM90ibQPaxW9QAAvoHxfVn8iDCmSRanhAoFVAbBJn6gMaRoiUhJsQpSc32XfsqqxPAy43BesrSfVwyf4iwI4odY/vx1GL4h09c9+E6Vr320c0kgUIzR1ipuwBxBnXFamrMVH7Jrl7NSmqxxgyFhlAiQOqVzjs6/ctjDZfE="
 
 script:
-  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || { go get -u github.com/gokrazy/autoupdate/cmd/gokr-pull-firmware && gokr-pull-firmware; }'
+  - '[ "$TRAVIS_SECURE_ENV_VARS" != "true" ] || { go mod init cron && go get -u github.com/gokrazy/autoupdate/cmd/gokr-pull-firmware && gokr-pull-firmware; }'
