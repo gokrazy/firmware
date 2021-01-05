@@ -11,9 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"context"
@@ -30,16 +28,6 @@ var (
 // Git commit hash of https://github.com/raspberrypi/firmware to take
 // firmware files from.
 const firmwareRef = "8a5549c137dbce0e082ecf21607dc5e3feac1160"
-
-var gopath = mustGetGopath()
-
-func mustGetGopath() string {
-	gopathb, err := exec.Command("go", "env", "GOPATH").Output()
-	if err != nil {
-		log.Panic(err)
-	}
-	return strings.TrimSpace(string(gopathb))
-}
 
 type contentEntry struct {
 	Name   string `json:"name"`
@@ -89,10 +77,9 @@ func main() {
 		}
 	}
 
-	path := filepath.Join(gopath, "src", "github.com", "gokrazy", "firmware")
 	var firmwareFiles []string
 	for _, pattern := range []string{"*.elf", "*.bin", "*.dat"} {
-		files, err := filepath.Glob(filepath.Join(path, pattern))
+		files, err := filepath.Glob(pattern)
 		if err != nil {
 			log.Fatal(err)
 		}
