@@ -27,7 +27,7 @@ var (
 
 // Git commit hash of https://github.com/raspberrypi/firmware to take
 // firmware files from.
-const firmwareRef = "775e6a7eb1c5630d9e118c250a15614b1be30e0e"
+const firmwareRef = "2c49739137e531ef6324b79a15f968db3128cc98"
 
 type contentEntry struct {
 	Name   string `json:"name"`
