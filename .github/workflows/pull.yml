@@ -14,8 +14,8 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        # Run on the latest minor release of Go 1.15:
-        go-version: ^1.15
+        # Run on the latest minor release of Go 1.17:
+        go-version: ^1.17
       id: go
 
     - name: Check out code into the Go module directory
@@ -37,7 +37,8 @@ jobs:
         BOOTERY_URL: ${{ secrets.BOOTERY_URL }}
       if: ${{ env.GH_USER != 0 }}
       run: |
-        GOPROXY=direct go get -u github.com/gokrazy/autoupdate/cmd/... github.com/gokrazy/tools/cmd/gokr-packer
+        GOPROXY=direct go install github.com/gokrazy/autoupdate/cmd/...@latest
+        GOPROXY=direct go install github.com/gokrazy/tools/cmd/gokr-packer@latest
         if gokr-has-label please-boot; then gokr-boot -require_label=please-boot -set_label=please-merge -bootery_url=$BOOTERY_URL; fi
 
     - name: Amend Pull Request
@@ -50,7 +51,7 @@ jobs:
         BOOTERY_URL: ${{ secrets.BOOTERY_URL }}
       if: ${{ env.GH_USER != 0 }}
       run: |
-        if ! gokr-has-label please-merge && ! gokr-has-label please-boot; then go install ./cmd/gokr-update-firmware && gokr-update-firmware && GOPROXY=direct go get -u github.com/gokrazy/autoupdate/cmd/gokr-amend && gokr-amend -set_label=please-boot *.bin *.elf *.dat; fi
+        if ! gokr-has-label please-merge && ! gokr-has-label please-boot; then go install ./cmd/gokr-update-firmware && gokr-update-firmware && GOPROXY=direct go install github.com/gokrazy/autoupdate/cmd/gokr-amend@latest && gokr-amend -set_label=please-boot *.bin *.elf *.dat; fi
 
     - name: Merge if boot successful
       env:
