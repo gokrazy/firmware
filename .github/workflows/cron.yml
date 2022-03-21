@@ -28,7 +28,7 @@ jobs:
 
     - name: Get dependencies
       run: |
-        GOPROXY=direct go get -u github.com/gokrazy/autoupdate/cmd/gokr-pull-firmware
+        GOPROXY=direct go install github.com/gokrazy/autoupdate/cmd/gokr-pull-firmware@latest
 
     - name: Update firmware reference if newer firmware is available
       env:
