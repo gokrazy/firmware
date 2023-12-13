@@ -71,7 +71,7 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	if *githubToken == "" {
-		if fromEnv := os.Getenv("GITHUB_USER") + ":" + os.Getenv("GITHUB_AUTH_TOKEN"); fromEnv != "" {
+		if fromEnv := os.Getenv("GITHUB_AUTH_TOKEN"); fromEnv != "" {
 			*githubToken = fromEnv
 		}
 	}
