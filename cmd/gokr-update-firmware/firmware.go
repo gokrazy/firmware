@@ -2,12 +2,10 @@ package main
 
 import (
 	"crypto/sha1"
-	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -21,9 +19,9 @@ import (
 )
 
 var (
-	userPass = flag.String("github_user_pass",
+	githubToken = flag.String("github_token",
 		"",
-		"If non-empty, a user:password string for HTTP basic authentication. See https://github.com/settings/tokens")
+		"If non-empty, a GitHub access token for HTTP authentication. See https://github.com/settings/tokens")
 )
 
 // Git commit hash of https://github.com/raspberrypi/firmware to take
@@ -38,8 +36,8 @@ type contentEntry struct {
 }
 
 func authenticate(req *http.Request) {
-	if *userPass != "" {
-		req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(*userPass)))
+	if *githubToken != "" {
+		req.Header.Set("Authorization", "Bearer "+*githubToken)
 	}
 }
 
@@ -54,7 +52,7 @@ func githubContents(url string) (map[string]contentEntry, error) {
 		return nil, err
 	}
 	if got, want := resp.StatusCode, http.StatusOK; got != want {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("unexpected status code: got %d, want %d (body: %s)", got, want, string(body))
 	}
 	var contents []contentEntry
@@ -72,9 +70,9 @@ func main() {
 	flag.Parse()
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	if *userPass == "" {
+	if *githubToken == "" {
 		if fromEnv := os.Getenv("GITHUB_USER") + ":" + os.Getenv("GITHUB_AUTH_TOKEN"); fromEnv != "" {
-			*userPass = fromEnv
+			*githubToken = fromEnv
 		}
 	}
 
