@@ -167,6 +167,7 @@ func main() {
 	ctx, canc := context.WithDeadline(context.Background(), time.Now().Add(1*time.Minute))
 	defer canc()
 	deg, ctx := errgroup.WithContext(ctx)
+	deg.SetLimit(5) // number of max concurrent GitHub requests
 	for path, githubContent := range filesToCheck {
 		githubContent := githubContent
 
