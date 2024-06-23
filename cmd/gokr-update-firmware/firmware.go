@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	"context"
@@ -77,7 +76,7 @@ func main() {
 	}
 
 	var firmwareFiles []string
-	for _, pattern := range []string{"*.elf", "*.bin", "*.dat", "overlays/*.dtbo"} {
+	for _, pattern := range []string{"*.elf", "*.bin", "*.dat"} {
 		files, err := filepath.Glob(pattern)
 		if err != nil {
 			log.Fatal(err)
@@ -86,11 +85,10 @@ func main() {
 	}
 
 	// Calculate the git blob hash of each file
-	firmwareHashes := make(map[string]string)
-	var firmwareHashesLock sync.Mutex
+	firmwareHashes := make([]string, len(firmwareFiles))
 	var eg errgroup.Group
-	for _, path := range firmwareFiles {
-		path := path // copy
+	for idx, path := range firmwareFiles {
+		idx, path := idx, path // copy
 		eg.Go(func() error {
 			hash := sha1.New()
 			f, err := os.Open(path)
@@ -108,10 +106,7 @@ func main() {
 			if _, err := io.Copy(hash, f); err != nil {
 				return err
 			}
-
-			firmwareHashesLock.Lock()
-			defer firmwareHashesLock.Unlock()
-			firmwareHashes[path] = fmt.Sprintf("%x", hash.Sum(nil))
+			firmwareHashes[idx] = fmt.Sprintf("%x", hash.Sum(nil))
 			return nil
 		})
 	}
@@ -120,67 +115,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Build a map of all files we want to make sure are up-to-date from GitHub
-	// map["start.elf"] = &contentEntry{...} | nil
-	filesToCheck := make(map[string]*contentEntry, 0)
-
 	contents, err := githubContents("https://api.github.com/repos/raspberrypi/firmware/contents/boot?ref=" + firmwareRef)
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	// Here we only handle files directly in /boot where we only want to mirror existing files
-	for _, path := range firmwareFiles {
-		// We handle overlays below
-		if filepath.Base(filepath.Dir(path)) == "overlays" {
-			continue
-		}
-		entry, ok := contents[path]
-		if ok {
-			filesToCheck[path] = &entry
-		} else {
-			filesToCheck[path] = nil
-		}
-	}
-
-	contents, err = githubContents("https://api.github.com/repos/raspberrypi/firmware/contents/boot/overlays?ref=" + firmwareRef)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Here we handle /boot/overlays where we want to mirror all files (especially new ones)
-	for path := range contents {
-		if filepath.Ext(path) != ".dtbo" {
-			continue
-		}
-		downloadPath := filepath.Join("overlays", filepath.Base(path))
-		entry, ok := contents[path]
-		if ok {
-			filesToCheck[downloadPath] = &entry
-		} else {
-			filesToCheck[downloadPath] = nil
-		}
 	}
 
 	ctx, canc := context.WithDeadline(context.Background(), time.Now().Add(1*time.Minute))
 	defer canc()
 	deg, ctx := errgroup.WithContext(ctx)
 	deg.SetLimit(5) // number of max concurrent GitHub requests
-	for path, githubContent := range filesToCheck {
-		githubContent := githubContent
-
-		if githubContent == nil {
-			log.Printf("file %q not found on GitHub, obsolete?", path)
+	for idx, path := range firmwareFiles {
+		fn := filepath.Base(path)
+		githubContent, ok := contents[fn]
+		if !ok {
+			log.Printf("file %q not found on GitHub, obsolete?", fn)
 			continue
 		}
-
-		dirName := filepath.Dir(path)
-		if dirName != "" {
-			os.MkdirAll(dirName, 0755)
-		}
-
-		if got, want := firmwareHashes[path], githubContent.Sha; got != want {
-			log.Printf("getting %s (local %s, GitHub %s)", path, got, want)
+		if got, want := firmwareHashes[idx], githubContent.Sha; got != want {
+			log.Printf("getting %s (local %s, GitHub %s)", fn, got, want)
 			path := path // copy
 			deg.Go(func() error {
 				req, err := http.NewRequest(http.MethodGet, githubContent.GitURL, nil)

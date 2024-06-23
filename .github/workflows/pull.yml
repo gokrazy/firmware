@@ -54,7 +54,7 @@ jobs:
         BOOTERY_URL: ${{ secrets.BOOTERY_URL }}
       if: ${{ env.GH_USER != 0 }}
       run: |
-        if ! gokr-has-label please-merge && ! gokr-has-label please-boot; then go install ./cmd/gokr-update-firmware && gokr-update-firmware && GOPROXY=direct go install github.com/gokrazy/autoupdate/cmd/gokr-amend@latest && gokr-amend -set_label=please-boot *.bin *.elf *.dat overlays; fi
+        if ! gokr-has-label please-merge && ! gokr-has-label please-boot; then go install ./cmd/gokr-update-firmware && gokr-update-firmware && GOPROXY=direct go install github.com/gokrazy/autoupdate/cmd/gokr-amend@latest && gokr-amend -set_label=please-boot *.bin *.elf *.dat; fi
 
     - name: Merge if boot successful
       env:
